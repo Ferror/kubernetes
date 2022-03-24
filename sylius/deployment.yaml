@@ -1,0 +1,22 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+    name: sylius-deployment
+    labels:
+        app: sylius
+spec:
+    replicas: 1
+    selector:
+        matchLabels:
+            app: sylius
+    template:
+        metadata:
+            labels:
+                app: sylius
+        spec:
+            containers:
+                -   name: sylius
+                    image: ferror/sylius-image:1.11
+                    ports:
+                        -   containerPort: 80
+
