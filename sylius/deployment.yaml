@@ -1,3 +1,21 @@
+apiVersion: v1
+kind: Secret
+metadata:
+    name: sylius-secret
+type: Opaque
+data:
+    name: dmFsdWU=
+#---
+#apiVersion: v1
+#kind: Pod
+#metadata:
+#    name: local-image-test
+#spec:
+#    containers:
+#        - name: local-image-container
+#          image: sylius-prod:latest
+#          imagePullPolicy: Never
+---
 apiVersion: apps/v1
 kind: Deployment
 metadata:
@@ -16,7 +34,8 @@ spec:
         spec:
             containers:
                 -   name: sylius
-                    image: ferror/sylius-image:1.11
+                    image: sylius-prod:latest
+                    imagePullPolicy: Never
                     ports:
                         -   containerPort: 80
 ---
@@ -33,11 +52,3 @@ spec:
             port: 80
             targetPort: 80
             nodePort: 30000
----
-apiVersion: v1
-kind: Secret
-metadata:
-    name: sylius-secret
-type: Opaque
-data:
-    name: value
