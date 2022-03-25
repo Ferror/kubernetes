@@ -5,7 +5,7 @@ metadata:
     labels:
         app: sylius
 spec:
-    replicas: 1
+    replicas: 3
     selector:
         matchLabels:
             app: sylius
@@ -19,4 +19,25 @@ spec:
                     image: ferror/sylius-image:1.11
                     ports:
                         -   containerPort: 80
-
+---
+apiVersion: v1
+kind: Service
+metadata:
+    name: sylius-service
+spec:
+    selector:
+        app: sylius
+    type: LoadBalancer
+    ports:
+        -   protocol: TCP
+            port: 80
+            targetPort: 80
+            nodePort: 30000
+---
+apiVersion: v1
+kind: Secret
+metadata:
+    name: sylius-secret
+type: Opaque
+data:
+    name: value
