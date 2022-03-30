@@ -2,7 +2,8 @@ init:
 	git clone git@github.com:Ferror/sylius-standard-dockerized.git
 
 deploy:
-	docker build --tag sylius-prod:latest sylius-standard-dockerized/.
+	docker build --tag sylius-prod:latest --platform linux/amd64 sylius-standard-dockerized/.
+	kubectl apply -f volume.yaml
 	kubectl apply -f deployment.yaml
 
 delete:
