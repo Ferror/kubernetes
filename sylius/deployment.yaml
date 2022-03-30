@@ -12,9 +12,17 @@
 #    name: local-image-test
 #spec:
 #    containers:
-#        - name: local-image-container
-#          image: sylius-prod:latest
-#          imagePullPolicy: Never
+#        -   name: local-image-container
+#            image: sylius-prod:latest
+#            imagePullPolicy: Never
+#---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+    name: sylius-config
+data:
+    APP_ENV: prod
+    DATABASE_URL: mysql://root:mysql@mysql-service/sylius
 ---
 apiVersion: apps/v1
 kind: Deployment
@@ -35,6 +43,9 @@ spec:
             containers:
                 -   name: sylius
                     image: sylius-prod:latest
+                    envFrom:
+                        -   configMapRef:
+                                name: sylius-config
                     imagePullPolicy: Never
                     ports:
                         -   containerPort: 80
@@ -52,69 +63,69 @@ spec:
             port: 80
             targetPort: 80
             nodePort: 30000
----
-apiVersion: v1
-kind: Service
-metadata:
-    name: mysql-service
-    labels:
-        app: mysql
-spec:
-    clusterIP: None
-    selector:
-        app: mysql
-    ports:
-        -   protocol: TCP
-            port: 3306
----
-apiVersion: v1
-kind: PersistentVolume
-metadata:
-    name: mysql-pv
-spec:
-    storageClassName: localstorage
-    capacity:
-        storage: 1Gi
-    accessModes:
-        - ReadWriteOnce
-    hostPath:
-        path: "/tmp/kubernetes/mysql"
----
-apiVersion: apps/v1
-kind: StatefulSet
-metadata:
-    name: mysql-statefulset
-spec:
-    replicas: 1
-    serviceName: mysql-service
-    selector:
-        matchLabels:
-            app: mysql
-    template:
-        metadata:
-            labels:
-                app: mysql
-        spec:
-            terminationGracePeriodSeconds: 10
-            containers:
-                -   name: mysql
-                    image: mysql:5.7
-                    ports:
-                        -   protocol: TCP
-                            containerPort: 3306
-                    env:
-                        -   name: MYSQL_ROOT_PASSWORD
-                            value: mysql
-                    volumeMounts:
-                        -   name: mysql-pv
-                            mountPath: /var/lib/mysql
-    volumeClaimTemplates:
-        -   metadata:
-                name: mysql-pv
-            spec:
-                storageClassName: localstorage
-                accessModes:
-                    - ReadWriteOnce
-                resources:
-                    requests:
-                        storage: 1Gi
+#---
+#apiVersion: v1
+#kind: Service
+#metadata:
+#    name: mysql-service
+#    labels:
+#        app: mysql
+#spec:
+#    clusterIP: None
+#    selector:
+#        app: mysql
+#    ports:
+#        -   protocol: TCP
+#            port: 3306
+#---
+#apiVersion: v1
+#kind: PersistentVolume
+#metadata:
+#    name: mysql-pv
+#spec:
+#    storageClassName: localstorage
+#    capacity:
+#        storage: 1Gi
+#    accessModes:
+#        - ReadWriteOnce
+#    hostPath:
+#        path: "/tmp/kubernetes/mysql"
+#---
+#apiVersion: apps/v1
+#kind: StatefulSet
+#metadata:
+#    name: mysql-statefulset
+#spec:
+#    replicas: 1
+#    serviceName: mysql-service
+#    selector:
+#        matchLabels:
+#            app: mysql
+#    template:
+#        metadata:
+#            labels:
+#                app: mysql
+#        spec:
+#            terminationGracePeriodSeconds: 10
+#            containers:
+#                -   name: mysql
+#                    image: mysql:5.7
+#                    ports:
+#                        -   protocol: TCP
+#                            containerPort: 3306
+#                    env:
+#                        -   name: MYSQL_ROOT_PASSWORD
+#                            value: mysql
+#                    volumeMounts:
+#                        -   name: mysql-pv
+#                            mountPath: /var/lib/mysql
+#    volumeClaimTemplates:
+#        -   metadata:
+#                name: mysql-pv
+#            spec:
+#                storageClassName: localstorage
+#                accessModes:
+#                    - ReadWriteOnce
+#                resources:
+#                    requests:
+#                        storage: 1Gi
