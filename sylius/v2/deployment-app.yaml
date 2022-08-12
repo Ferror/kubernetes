@@ -34,8 +34,8 @@ spec:
                         -   configMapRef:
                                 name: sylius-config
                     imagePullPolicy: Never
-                    ports:
-                        -   containerPort: 9000
+#                    ports:
+#                        -   containerPort: 9000
                 -   name: sylius-nginx
                     image: sylius-prod-nginx:latest
                     ports:

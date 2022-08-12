@@ -4,7 +4,7 @@ metadata:
     name: sylius-config
 data:
     APP_ENV: prod
-    APP_DEBUG: 0
+    APP_DEBUG: "0"
     APP_SECRET: super-secret-app
     DATABASE_URL: mysql://root:mysql@mysql-service/sylius
 ---
@@ -27,12 +27,12 @@ spec:
             containers:
                 -   name: sylius
                     image: sylius-prod:latest
-                    livenessProbe:
-                        httpGet:
-                            path: /
-                            port: 80
-                        initialDelaySeconds: 20
-                        periodSeconds: 20
+#                    livenessProbe:
+#                        httpGet:
+#                            path: /
+#                            port: 80
+#                        initialDelaySeconds: 20
+#                        periodSeconds: 20
                     envFrom:
                         -   configMapRef:
                                 name: sylius-config
@@ -83,16 +83,17 @@ spec:
             labels:
                 app: mysql
         spec:
-            terminationGracePeriodSeconds: 10
             containers:
                 -   name: mysql
-                    image: mysql:5.7
+                    image: mysql:8.0
                     ports:
                         -   protocol: TCP
                             containerPort: 3306
                     env:
                         -   name: MYSQL_ROOT_PASSWORD
                             value: mysql
+                        -   name: MYSQL_DATABASE
+                            value: sylius
                     volumeMounts:
                         -   name: mysql-pv
                             mountPath: /var/lib/mysql
