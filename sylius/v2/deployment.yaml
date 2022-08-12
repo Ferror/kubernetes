@@ -24,6 +24,9 @@ spec:
             labels:
                 app: sylius
         spec:
+            volumes:
+                -   name: shared-files
+                    emptyDir: {}
             containers:
                 -   name: sylius-php
                     image: sylius-prod-php:latest
@@ -34,7 +37,7 @@ spec:
                     ports:
                         -   containerPort: 9000
                 -   name: sylius-nginx
-                    image: nginx:latest
+                    image: sylius-prod-nginx:latest
                     ports:
                           -   containerPort: 80
 ---
