@@ -11,6 +11,6 @@ deploy: build
 	kubectl apply -f deployment-mysql.yaml
 
 delete:
-	kubectl delete -f volume.yaml
 	kubectl delete -f deployment-app.yaml
 	kubectl delete -f deployment-mysql.yaml
+	kubectl delete -f volume.yaml

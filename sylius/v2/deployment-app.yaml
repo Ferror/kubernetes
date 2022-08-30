@@ -4,7 +4,7 @@ metadata:
     name: sylius-config
 data:
     APP_ENV: prod
-    APP_DEBUG: 0
+    APP_DEBUG: "0"
     APP_SECRET: super-secret-app
     DATABASE_URL: mysql://root:mysql@mysql-service/sylius
 ---
