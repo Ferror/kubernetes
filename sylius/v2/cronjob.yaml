@@ -29,5 +29,5 @@ spec:
                         - name: sylius-prod-php-cronjob
                           image: sylius-prod-php:latest
                           imagePullPolicy: IfNotPresent
-                          command: ["php", "bin/console", "sylius:sylius:cancel-unpaid-orders"]
+                          command: ["php", "bin/console", "sylius:cancel-unpaid-orders"]
                     restartPolicy: OnFailure
