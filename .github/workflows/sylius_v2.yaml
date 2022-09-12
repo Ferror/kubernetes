@@ -33,7 +33,7 @@ jobs:
             - name: Kubeval Static Analyse
               uses: instrumenta/kubeval-action@master
               with:
-                files: sylius/v2/.
+                files: sylius/v2/manifest/.
 
             - name: Build Image
               uses: docker/build-push-action@v3
