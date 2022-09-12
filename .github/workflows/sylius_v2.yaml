@@ -30,6 +30,12 @@ jobs:
             - name: Create Sylius-Standard Project
               run: git clone https://github.com/Sylius/Sylius-Standard.git sylius/v2/app
 
+            - name: Kubeval Static Analyse
+              uses: brpaz/gh-kubeval-action@v1.0.1
+              with:
+                files: sylius/v2
+                github_token: ${{ secrets.GITHUB_TOKEN }}
+
             - name: Build Image
               uses: docker/build-push-action@v3
               with:
