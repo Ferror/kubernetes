@@ -1,7 +1,7 @@
 init:
 	git clone https://github.com/Sylius/Sylius-Standard.git app
 
-build:
+build: init
 	docker build --tag sylius-prod-php --target sylius_php_prod --platform linux/amd64 app/
 	docker build --tag sylius-prod-nginx --target sylius_nginx --platform linux/amd64 app/
 
