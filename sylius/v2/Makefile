@@ -9,8 +9,12 @@ deploy:
 	kubectl apply -f manifest/volume.yaml
 	kubectl apply -f manifest/deployment-app.yaml
 	kubectl apply -f manifest/deployment-mysql.yaml
+	kubectl apply -f manifest/job.yaml
+	kubectl apply -f manifest/cronjob.yaml
 
 delete:
 	kubectl delete -f manifest/deployment-app.yaml
 	kubectl delete -f manifest/deployment-mysql.yaml
 	kubectl delete -f manifest/volume.yaml
+	kubectl delete -f manifest/job.yaml
+	kubectl delete -f manifest/cronjob.yaml
