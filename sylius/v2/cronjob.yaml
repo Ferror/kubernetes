@@ -1,0 +1,35 @@
+apiVersion: batch/v1
+kind: CronJob
+metadata:
+    name: sylius-remove-expired-carts-cronjob
+spec:
+    schedule: "0 */6 * * *"
+    jobTemplate:
+        spec:
+            template:
+                spec:
+                    containers:
+                        - name: sylius-prod-php-cronjob
+                          image: sylius-prod-php:latest
+                          imagePullPolicy: IfNotPresent
+                          command: ["php", "bin/console", "sylius:remove-expired-carts"]
+                    restartPolicy: OnFailure
+    failedJobsHistoryLimit: 1
+---
+apiVersion: batch/v1
+kind: CronJob
+metadata:
+    name: sylius-cancel-unpaid-orders-cronjob
+spec:
+    schedule: "0 */6 * * *"
+    jobTemplate:
+        spec:
+            template:
+                spec:
+                    containers:
+                        - name: sylius-prod-php-cronjob
+                          image: sylius-prod-php:latest
+                          imagePullPolicy: IfNotPresent
+                          command: ["php", "bin/console", "sylius:cancel-unpaid-orders"]
+                    restartPolicy: OnFailure
+    failedJobsHistoryLimit: 1
