@@ -78,8 +78,18 @@ service:
   type: ClusterIP
   port: 80
 
-jobs: []
+cronjobs:
+  - name: cancel-unpaid-orders
+    schedule: "* */6 * * *"
+    command: ["php", "bin/console", "sylius:cancel-unpaid-orders"]
+  - name: remove-expired-carts
+    schedule: "* */6 * * *"
+    command: ["php", "bin/console", "sylius:remove-expired-carts"]
 
+jobs:
+  - name: migrations
+    restartPolicy: Never
+    command: ["php", "bin/console", "doctrine:migration:migrate", "-y", "--no-interaction"]
 
 nodeSelector: {}
 

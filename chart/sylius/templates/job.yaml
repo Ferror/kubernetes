@@ -1,22 +1,28 @@
+{{- $root := . -}}
+{{- range $job := .Values.jobs }}
+---
 apiVersion: batch/v1
 kind: Job
 metadata:
-    name: {{ include "sylius.fullname" . }}-job
-    labels:
-      {{- include "sylius.labels" . | nindent 4 }}
+  name: {{ include "sylius.fullname" $ }}-job-{{ $job.name }}
+  labels:
+    {{- include "sylius.labels" $ | nindent 4 }}
 spec:
-    backoffLimit: 1
-    template:
-        metadata:
-            labels:
-            {{- include "sylius.fullname.selectorLabels" . | nindent 8 }}
-        spec:
-            containers:
-                - name: {{ .Chart.Name }}
-                  image: "{{ .Values.image.repository_app }}:{{ .Values.image.tag | default .Chart.AppVersion }}"
-                  imagePullPolicy: {{ .Values.image.pullPolicy }}
-                  command: ["php", "bin/console", "doctrine:migration:migrate", "-y", "--no-interaction"]
-                  envFrom:
-                      - secretRef:
-                          name: {{ include "sylius.fullname" . }}-envs
-            restartPolicy: {{ .Values.job.restartPolicy }}
+  backoffLimit: 1
+  template:
+    metadata:
+      labels:
+        {{- include "sylius.labels" $ | nindent 4 }}
+    spec:
+      containers:
+        - name: {{ $job.name }}
+          image: "{{ $root.Values.image.repository_app }}:{{ $root.Values.image.tag | default $root.Chart.AppVersion }}"
+          imagePullPolicy: {{ $root.Values.image.pullPolicy }}
+          {{- if $job.command }}
+          command: {{ $job.command }}
+          {{- end }}
+          envFrom:
+            - secretRef:
+                name: {{ include "sylius.fullname" $ }}-envs
+      restartPolicy: {{ $job.restartPolicy }}
+{{- end }}

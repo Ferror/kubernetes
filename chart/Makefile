@@ -10,3 +10,6 @@ deploy: build
 
 delete:
 	helm uninstall sylius
+
+validate:
+	helm lint sylius sylius/ --values sylius/values.yaml

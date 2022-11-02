@@ -1,89 +1,71 @@
-{{- $chart_name := .Chart.Name }}
-{{- $chart_version := .Chart.Version | replace "+" "_" }}
-{{- $release_name := .Release.Name }}
-
-{{- range $job := .Values.jobs }}
+{{- $root := . -}}
+{{- range $job := .Values.cronjobs }}
 ---
 apiVersion: batch/v1beta1
 kind: CronJob
 metadata:
-    name: "{{ $release_name }}-{{ $job.name }}"
-    labels:
-        chart: "{{ $chart_name }}-{{ $chart_version }}"
+  name: {{ include "sylius.fullname" $root }}-cronjob-{{ $job.name }}
+  labels:
+    {{- include "sylius.labels" $root | nindent 4 }}
 spec:
-    concurrencyPolicy: {{ $job.concurrencyPolicy }}
-    failedJobsHistoryLimit: {{ $job.failedJobsHistoryLimit }}
-    jobTemplate:
+  concurrencyPolicy: {{ $job.concurrencyPolicy }}
+  failedJobsHistoryLimit: {{ $job.failedJobsHistoryLimit }}
+  successfulJobsHistoryLimit: {{ $job.successfulJobsHistoryLimit }}
+  schedule: {{ $job.schedule | quote }}
+  jobTemplate:
+    spec:
+      template:
+        metadata:
+          labels:
+            {{- include "sylius.labels" $root | nindent 4 }}
         spec:
-            template:
-                metadata:
-                    labels:
-                        app: {{ $release_name }}
-                        cron: {{ $job.name }}
-                spec:
-        {{- if hasKey $job "serviceAccount" }}
-        {{- if hasKey $job.serviceAccount "name" }}
-                    serviceAccountName: {{ $job.serviceAccount.name }}
-        {{- else }}
-                    serviceAccountName: {{ $job.name }}
-        {{- end }}
-        {{- end }}
-        {{- if hasKey $job "securityContext" }}
-          {{- if $job.securityContext.runAsUser }}
-                    securityContext:
-                        runAsUser: {{ $job.securityContext.runAsUser }}
-            {{- if $job.securityContext.runAsGroup }}
-                        runAsGroup: {{ $job.securityContext.runAsGroup }}
-            {{- end }}
-            {{- if $job.securityContext.fsGroup }}
-                        fsGroup: {{ $job.securityContext.fsGroup }}
-            {{- end }}
+          {{- with $root.Values.imagePullSecrets }}
+          imagePullSecrets:
+          {{- toYaml . | nindent 10 }}
           {{- end }}
-        {{- end }}
-                    containers:
-                        - image: "{{ $job.image.repository }}:{{ $job.image.tag }}"
-                          imagePullPolicy: {{ $job.image.imagePullPolicy }}
-                          name: {{ $job.name }}
-            {{- with $job.env }}
-                          env:
-{{ toYaml . | indent 12 }}
-            {{- end }}
-            {{- with $job.envFrom }}
-                          envFrom:
-{{ toYaml . | indent 12 }}
-            {{- end }}
-            {{- if $job.command }}
-                          command: {{ $job.command }}
-            {{- end }}
-            {{- with $job.args }}
-                          args:
-{{ toYaml . | indent 12 }}
+          serviceAccountName: {{ include "sylius.serviceAccountName" $root }}
+          securityContext:
+          {{- toYaml $root.Values.podSecurityContext | nindent 10 }}
+          containers:
+            - image: "{{ $root.Values.image.repository_app }}:{{ $root.Values.image.tag }}"
+              imagePullPolicy: {{ $root.Values.image.imagePullPolicy }}
+              name: {{ $job.name }}
+              envFrom:
+                - secretRef:
+                    name: {{ include "sylius.fullname" $root }}-envs
+              {{- if $job.command }}
+              command: {{ $job.command }}
               {{- end }}
-            {{- with $job.resources }}
-                          resources:
-{{ toYaml . | indent 14 }}
-            {{- end }}
-            {{- with $job.volumeMounts }}
-                          volumeMounts:
-{{ toYaml . | indent 12 }}
-            {{- end }}
+
+              {{- with $job.args }}
+              args:
+              {{ toYaml . | indent 14 }}
+              {{- end }}
+
+              {{- with $job.resources }}
+              resources:
+              {{ toYaml . | indent 14 }}
+              {{- end }}
+
+              {{- with $job.volumeMounts }}
+              volumeMounts:
+                {{ toYaml . | indent 14 }}
+              {{- end }}
+
           {{- with $job.nodeSelector }}
-                    nodeSelector:
-{{ toYaml . | indent 12 }}
+          nodeSelector:
+          {{ toYaml . | indent 10 }}
           {{- end }}
+
           {{- with $job.affinity }}
-                    affinity:
-{{ toYaml . | indent 12 }}
+          affinity:
+          {{ toYaml . | indent 10 }}
           {{- end }}
+
           {{- with $job.tolerations }}
-                    tolerations:
-{{ toYaml . | indent 12 }}
+          tolerations:
+          {{ toYaml . | indent 10 }}
           {{- end }}
-                    restartPolicy: {{ $job.restartPolicy }}
-          {{- with $job.volumes }}
-                    volumes:
-{{ toYaml . | indent 12 }}
-          {{- end }}
-    schedule: {{ $job.schedule | quote }}
-    successfulJobsHistoryLimit: {{ $job.successfulJobsHistoryLimit }}
+
+          restartPolicy: {{ $job.restartPolicy }}
 {{- end }}
