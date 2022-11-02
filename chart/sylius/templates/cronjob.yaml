@@ -1,0 +1,29 @@
+{{- $root := . -}}
+{{- range $job := .Values.cronjobs }}
+---
+apiVersion: batch/v1
+kind: CronJob
+metadata:
+  name: {{ include "sylius.fullname" $root }}-cronjob-{{ $job.name }}
+  labels:
+    {{- include "sylius.labels" $root | nindent 4 }}
+spec:
+  concurrencyPolicy: {{ $job.concurrencyPolicy }}
+  failedJobsHistoryLimit: {{ $job.failedJobsHistoryLimit }}
+  successfulJobsHistoryLimit: {{ $job.successfulJobsHistoryLimit }}
+  schedule: {{ $job.schedule | quote }}
+  jobTemplate:
+    spec:
+      template:
+        metadata:
+          labels:
+            {{- include "sylius.labels" $root | nindent 12 }}
+        spec:
+          containers:
+            - name: {{ $job.name }}
+              image: "{{ $root.Values.image.repository_app }}:{{ $root.Values.image.tag }}"
+              envFrom:
+                - secretRef:
+                    name: {{ include "sylius.fullname" $root }}-envs
+              command: {{ $job.command }}
+{{- end }}
