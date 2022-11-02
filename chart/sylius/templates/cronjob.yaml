@@ -1,7 +1,7 @@
 {{- $root := . -}}
 {{- range $job := .Values.cronjobs }}
 ---
-apiVersion: batch/v1beta1
+apiVersion: batch/v1
 kind: CronJob
 metadata:
   name: {{ include "sylius.fullname" $root }}-cronjob-{{ $job.name }}
@@ -17,55 +17,13 @@ spec:
       template:
         metadata:
           labels:
-            {{- include "sylius.labels" $root | nindent 4 }}
+            {{- include "sylius.labels" $root | nindent 12 }}
         spec:
-          {{- with $root.Values.imagePullSecrets }}
-          imagePullSecrets:
-          {{- toYaml . | nindent 10 }}
-          {{- end }}
-          serviceAccountName: {{ include "sylius.serviceAccountName" $root }}
-          securityContext:
-          {{- toYaml $root.Values.podSecurityContext | nindent 10 }}
           containers:
-            - image: "{{ $root.Values.image.repository_app }}:{{ $root.Values.image.tag }}"
-              imagePullPolicy: {{ $root.Values.image.imagePullPolicy }}
-              name: {{ $job.name }}
+            - name: {{ $job.name }}
+              image: "{{ $root.Values.image.repository_app }}:{{ $root.Values.image.tag }}"
               envFrom:
                 - secretRef:
                     name: {{ include "sylius.fullname" $root }}-envs
-              {{- if $job.command }}
               command: {{ $job.command }}
-              {{- end }}
-
-              {{- with $job.args }}
-              args:
-              {{ toYaml . | indent 14 }}
-              {{- end }}
-
-              {{- with $job.resources }}
-              resources:
-              {{ toYaml . | indent 14 }}
-              {{- end }}
-
-              {{- with $job.volumeMounts }}
-              volumeMounts:
-                {{ toYaml . | indent 14 }}
-              {{- end }}
-
-          {{- with $job.nodeSelector }}
-          nodeSelector:
-          {{ toYaml . | indent 10 }}
-          {{- end }}
-
-          {{- with $job.affinity }}
-          affinity:
-          {{ toYaml . | indent 10 }}
-          {{- end }}
-
-          {{- with $job.tolerations }}
-          tolerations:
-          {{ toYaml . | indent 10 }}
-          {{- end }}
-
-          restartPolicy: {{ $job.restartPolicy }}
 {{- end }}
