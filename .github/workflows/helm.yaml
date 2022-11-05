@@ -21,6 +21,9 @@ jobs:
       - name: Create kind cluster
         uses: helm/kind-action@v1.3.0
 
+      - name: Install Helm Dependencies
+        run: helm dependency build chart/sylius
+
       - name: Validate Helm Chart
         run: helm lint sylius chart/sylius/ --values chart/sylius/values.yaml
 
