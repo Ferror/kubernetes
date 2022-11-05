@@ -1,0 +1,63 @@
+name: Lint and Test Helm Chart
+
+on:
+  push:
+
+jobs:
+  lint-test:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v3
+
+      - name: Setup Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: 3.7
+
+      - name: Set up chart-testing
+        uses: helm/chart-testing-action@v2.3.0
+
+      - name: Create kind cluster
+        uses: helm/kind-action@v1.3.0
+
+      - name: Validate Helm Chart
+        run: helm lint sylius chart/sylius/ --values chart/sylius/values.yaml
+
+      # START BUILDING APP
+      - name: Set Up QEMU
+        uses: docker/setup-qemu-action@v2
+
+      - name: Set Up Docker Buildx
+        uses: docker/setup-buildx-action@v2
+
+      - name: Create Sylius-Standard Project
+        run: git clone https://github.com/Sylius/Sylius-Standard.git sylius/v2/app
+
+      - name: Build PHP Image
+        uses: docker/build-push-action@v3
+        with:
+          push: false
+          context: sylius/v2/app
+          tags: sylius-prod-php
+          target: sylius_php_prod
+          platforms: linux/amd64
+          cache-from: type=gha
+          cache-to: type=gha
+          load: true
+
+      - name: Build NGiNX Image
+        uses: docker/build-push-action@v3
+        with:
+          push: false
+          context: sylius/v2/app
+          tags: sylius-prod-nginx
+          target: sylius_nginx
+          platforms: linux/amd64
+          cache-from: type=gha
+          cache-to: type=gha
+          load: true
+      # END BUILDING APP
+
+      - name: Run Apply Kubernetes Config
+        run: helm install sylius chart/sylius/ --values chart/sylius/values.yaml
