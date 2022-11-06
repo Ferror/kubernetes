@@ -12,4 +12,4 @@ delete:
 	helm uninstall sylius
 
 validate:
-	helm lint sylius sylius/ --values sylius/values.yaml
+	helm lint sylius --values sylius/values.yaml

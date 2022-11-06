@@ -27,7 +27,7 @@ jobs:
           helm dependency build chart/sylius
 
       - name: Validate Helm Chart
-        run: helm lint sylius chart/sylius/ --values chart/sylius/values.yaml
+        run: helm lint chart/sylius --values chart/sylius/values.yaml
 
       # START BUILDING APP
       - name: Set Up QEMU
