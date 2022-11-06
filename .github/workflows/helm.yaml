@@ -65,4 +65,4 @@ jobs:
       # END BUILDING APP
 
       - name: Run Apply Kubernetes Config
-        run: helm install sylius chart/sylius/ --values chart/sylius/values.yaml
+        run: helm install sylius chart/sylius/ --values chart/sylius/values.yaml --debug
