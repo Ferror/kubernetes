@@ -37,14 +37,14 @@ jobs:
         uses: docker/setup-buildx-action@v2
 
       - name: Create Sylius-Standard Project
-        run: git clone https://github.com/Sylius/Sylius-Standard.git sylius/v2/app
+        run: git clone https://github.com/Sylius/Sylius-Standard.git chart/app
 
       - name: Build PHP Image
         uses: docker/build-push-action@v3
         with:
           push: false
-          context: sylius/v2/app
-          tags: sylius-prod-php
+          context: chart/app
+          tags: sylius-php
           target: sylius_php_prod
           platforms: linux/amd64
           cache-from: type=gha
@@ -55,8 +55,8 @@ jobs:
         uses: docker/build-push-action@v3
         with:
           push: false
-          context: sylius/v2/app
-          tags: sylius-prod-nginx
+          context: chart/app
+          tags: sylius-nginx
           target: sylius_nginx
           platforms: linux/amd64
           cache-from: type=gha

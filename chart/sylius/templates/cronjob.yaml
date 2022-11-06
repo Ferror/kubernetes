@@ -19,6 +19,7 @@ spec:
           labels:
             {{- include "sylius.labels" $root | nindent 12 }}
         spec:
+          restartPolicy: OnFailure
           containers:
             - name: {{ $job.name }}
               image: "{{ $root.Values.image.repository_app }}:{{ $root.Values.image.tag }}"
