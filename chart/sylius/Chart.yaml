@@ -1,7 +1,7 @@
 apiVersion: v2
 name: sylius
 description: A Helm chart for Kubernetes
-icon: https://https://assets.malcherczyk.com/favicons/32/z.ico
+icon: https://assets.malcherczyk.com/favicons/32/z.ico
 # A chart can be either an 'application' or a 'library' chart.
 #
 # Application charts are a collection of templates that can be packaged into versioned archives
