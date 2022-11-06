@@ -4,25 +4,23 @@
 apiVersion: batch/v1
 kind: Job
 metadata:
-  name: {{ include "sylius.fullname" $ }}-job-{{ $job.name }}
+  name: {{ include "sylius.fullname" $root }}-job-{{ $job.name }}
   labels:
-    {{- include "sylius.labels" $ | nindent 4 }}
+    {{- include "sylius.labels" $root | nindent 4 }}
 spec:
   backoffLimit: 1
   template:
     metadata:
       labels:
-        {{- include "sylius.labels" $ | nindent 4 }}
+        {{- include "sylius.labels" $root | nindent 8 }}
     spec:
+      restartPolicy: {{ $job.restartPolicy }}
       containers:
         - name: {{ $job.name }}
           image: "{{ $root.Values.image.repository_app }}:{{ $root.Values.image.tag | default $root.Chart.AppVersion }}"
           imagePullPolicy: {{ $root.Values.image.pullPolicy }}
-          {{- if $job.command }}
           command: {{ $job.command }}
-          {{- end }}
           envFrom:
             - secretRef:
                 name: {{ include "sylius.fullname" $ }}-envs
-      restartPolicy: {{ $job.restartPolicy }}
 {{- end }}

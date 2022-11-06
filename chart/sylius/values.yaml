@@ -81,9 +81,11 @@ service:
 cronjobs:
   - name: cancel-unpaid-orders
     schedule: "* */6 * * *"
+    restartPolicy: Never
     command: ["php", "bin/console", "sylius:cancel-unpaid-orders"]
   - name: remove-expired-carts
     schedule: "* */6 * * *"
+    restartPolicy: Never
     command: ["php", "bin/console", "sylius:remove-expired-carts"]
 
 jobs:

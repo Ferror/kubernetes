@@ -23,8 +23,8 @@ spec:
           containers:
             - name: {{ $job.name }}
               image: "{{ $root.Values.image.repository_app }}:{{ $root.Values.image.tag }}"
+              command: {{ $job.command }}
               envFrom:
                 - secretRef:
                     name: {{ include "sylius.fullname" $root }}-envs
-              command: {{ $job.command }}
 {{- end }}
