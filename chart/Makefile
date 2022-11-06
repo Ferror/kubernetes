@@ -5,11 +5,11 @@ build:
 	docker build --tag sylius-php --target sylius_php_prod --platform linux/amd64 app/
 	docker build --tag sylius-nginx --target sylius_nginx --platform linux/amd64 app/
 
-deploy: build
-	helm install sylius sylius/ --values sylius/values.yaml
+deploy: #build
+	helm install sylius sylius/ --values sylius/values.yaml #--debug --dry-run
 
 delete:
 	helm uninstall sylius
 
 validate:
-	helm lint sylius sylius/ --values sylius/values.yaml
+	helm lint sylius --values sylius/values.yaml
