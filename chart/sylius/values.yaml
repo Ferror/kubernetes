@@ -52,6 +52,9 @@ imagePullSecrets: []
 nameOverride: ""
 fullnameOverride: ""
 
+global:
+  namespace: "sylius"
+
 serviceAccount:
   # Specifies whether a service account should be created
   create: true

@@ -5,6 +5,7 @@ apiVersion: batch/v1
 kind: CronJob
 metadata:
   name: {{ include "sylius.fullname" $root }}-cronjob-{{ $job.name }}
+  namespace: {{ $root.Values.global.namespace }}
   labels:
     {{- include "sylius.labels" $root | nindent 4 }}
 spec:
