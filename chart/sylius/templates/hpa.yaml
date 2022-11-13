@@ -3,6 +3,7 @@ apiVersion: autoscaling/v2
 kind: HorizontalPodAutoscaler
 metadata:
   name: {{ include "sylius.fullname" . }}
+  namespace: {{ .Values.global.namespace }}
   labels:
     {{- include "sylius.labels" . | nindent 4 }}
 spec:
